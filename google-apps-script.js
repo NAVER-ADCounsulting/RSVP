@@ -24,7 +24,8 @@
  */
 
 var SPREADSHEET_ID = '16KsRUetko_N8wqA7pN_qyIHD9-vXCDfMvUqwtM01G2Y';
-var SHEET_GID      = 2055763895; // 특정 탭 (gid)
+var SHEET_GID      = 2055763895;
+var SECRET_TOKEN   = '06df63acacdda695707f479ca241b4c14f4cc74501e8cdac';
 
 function getTargetSheet() {
   var ss = SpreadsheetApp.openById(SPREADSHEET_ID);
@@ -41,6 +42,15 @@ function doPost(e) {
   lock.tryLock(10000);
 
   try {
+    var data = JSON.parse(e.postData.contents);
+
+    // 토큰 검증
+    if (data.token !== SECRET_TOKEN) {
+      return ContentService
+        .createTextOutput(JSON.stringify({ result: 'unauthorized' }))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+
     var sheet = getTargetSheet();
 
     // 헤더 자동 생성 (첫 제출 시)
@@ -49,8 +59,6 @@ function doPost(e) {
       sheet.getRange(1, 1, 1, 8).setFontWeight('bold');
       sheet.setFrozenRows(1);
     }
-
-    var data = JSON.parse(e.postData.contents);
 
     var attendanceMap = { attending: '참석', not_attending: '불참', undecided: '미정' };
     var companionMap  = { just_me: '본인만', '+1': '+1명', '+2': '+2명', '+3': '+3명 이상', '-': '-' };
