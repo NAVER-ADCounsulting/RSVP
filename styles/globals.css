@@ -104,7 +104,7 @@ body {
   border-bottom: 1px solid rgba(255,255,255,0.05);
   margin: 0 -20px;
 }
-.brand-row { display: flex; align-items: center; gap: 14px; }
+.brand-row { display: flex; align-items: center; gap: 14px; margin-left: 12px; }
 .brand-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.16); }
 .brand-name { font-weight: 800; letter-spacing: 0.06em; font-size: 12px; }
 .brand-naver    { color: #03C75A; }
@@ -141,13 +141,14 @@ body {
 .hero { text-align: center; padding: 32px 0 28px; }
 
 .n-cube-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
-.n-cube { width: 84px; height: 84px; position: relative; display: flex; align-items: center; justify-content: center; }
+.n-cube { width: 76px; height: 76px; position: relative; display: flex; align-items: center; justify-content: center; }
 .n-cube-inner {
-  width: 66px; height: 66px;
+  width: 58px; height: 58px;
   background: linear-gradient(145deg, #1A6DFF 0%, #0035CC 50%, #6A00CC 100%);
-  border-radius: 14px;
+  border-radius: 13px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 34px; font-weight: 900; color: white;
+  font-size: 30px; font-weight: 900; color: white;
+  -webkit-text-stroke: 1px white;
   transform: perspective(200px) rotateX(-8deg) rotateY(16deg);
   box-shadow: 0 0 0 1px rgba(100,180,255,0.22), 0 0 24px rgba(0,100,255,0.52), 0 0 60px rgba(0,60,200,0.24),
               inset 0 1px 0 rgba(255,255,255,0.2), inset -2px -2px 0 rgba(0,0,0,0.16);
