@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RSVP | 2026 NAVER MARKETING DAY - Road to Korea</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@1,700;1,900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #04041A;
+      --surface: #0C0C26;
+      --accent: #00D4FF;
+      --accent-dim: rgba(0,212,255,0.10);
+      --text: #FFFFFF;
+      --text-muted: #8888AA;
+      --text-dim: #44445A;
+      --border: rgba(0,212,255,0.15);
+      --border-subtle: rgba(255,255,255,0.07);
+      --error: #FF4D6A;
+      --success: #00E5A0;
+      --radius: 12px;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* ── Fixed backgrounds ── */
+    .bg-gradient {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 70% 45% at 10% 5%,  rgba(0,80,200,0.28) 0%, transparent 55%),
+        radial-gradient(ellipse 55% 40% at 90% 8%,  rgba(90,10,210,0.20) 0%, transparent 50%),
+        radial-gradient(ellipse 60% 30% at 50% 100%,rgba(0,40,150,0.18) 0%, transparent 55%),
+        var(--bg);
+    }
+    .bg-dots {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: radial-gradient(circle, rgba(0,212,255,0.07) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+    #particleCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+    .deco-ring {
+      position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
+      border: 1px solid rgba(0,212,255,0.07);
+    }
+    .ring-1 { width: 520px; height: 520px; top: -160px; left: -160px; }
+    .ring-2 { width: 380px; height: 380px; top: -60px;  left: -60px; border-color: rgba(0,212,255,0.04); }
+    .ring-3 { width: 600px; height: 600px; bottom: -200px; right: -200px; border-color: rgba(107,33,212,0.08); }
+    .ring-4 { width: 420px; height: 420px; bottom: -100px; right: -100px; border-color: rgba(107,33,212,0.05); }
+    .deco-line-tl {
+      position: fixed; top: 0; left: 0; width: 180px; height: 180px; z-index: 0; pointer-events: none;
+      border-top: 1px solid rgba(0,212,255,0.10);
+      border-left: 1px solid rgba(0,212,255,0.10);
+      border-radius: 0 0 110px 0;
+    }
+    .deco-line-br {
+      position: fixed; bottom: 0; right: 0; width: 180px; height: 180px; z-index: 0; pointer-events: none;
+      border-bottom: 1px solid rgba(107,33,212,0.10);
+      border-right: 1px solid rgba(107,33,212,0.10);
+      border-radius: 110px 0 0 0;
+    }
+    .bg-scanlines {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background: repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
+    }
+
+    /* ── Layout ── */
+    .page-wrap {
+      position: relative; z-index: 1;
+      max-width: 680px; margin: 0 auto; padding: 0 20px 72px;
+    }
+
+    /* ── Sticky header: brands + lang ── */
+    .top-bar {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 13px 20px;
+      backdrop-filter: blur(20px);
+      background: rgba(4,4,26,0.80);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      margin: 0 -20px;
+    }
+    .brand-row {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .brand-sep { width: 1px; height: 16px; background: rgba(255,255,255,0.16); }
+    .brand-name { font-weight: 800; letter-spacing: 0.06em; font-size: 12px; }
+    .brand-naver    { color: #03C75A; }
+    .brand-webtoon  { color: #00D2FF; }
+    .brand-madhouse { color: #C8AAFF; }
+
+    /* Lang switcher */
+    .lang-dropdown { position: relative; }
+    .lang-btn {
+      display: flex; align-items: center; gap: 7px;
+      background: none; border: 1px solid var(--border); border-radius: 999px;
+      padding: 5px 12px; color: var(--text-muted); font-size: 12px;
+      cursor: pointer; transition: all 0.2s; font-family: inherit;
+    }
+    .lang-btn svg { width: 14px; height: 14px; }
+    .lang-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .lang-menu {
+      display: none; position: absolute; right: 0; top: calc(100% + 8px);
+      background: #12122E; border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden; min-width: 126px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.55);
+    }
+    .lang-menu.open { display: block; }
+    .lang-option {
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 14px; cursor: pointer; font-size: 13px;
+      transition: background 0.15s; color: var(--text);
+    }
+    .lang-option:hover { background: var(--accent-dim); }
+    .lang-option.active { color: var(--accent); }
+    .lang-option .flag { font-size: 16px; }
+
+    /* ── Hero ── */
+    .hero {
+      text-align: center;
+      padding: 32px 0 28px;
+    }
+
+    /* N Cube */
+    .n-cube-wrap { display: flex; justify-content: center; margin-bottom: 18px; }
+    .n-cube { width: 84px; height: 84px; position: relative; display: flex; align-items: center; justify-content: center; }
+    .n-cube-inner {
+      width: 66px; height: 66px;
+      background: linear-gradient(145deg, #1A6DFF 0%, #0035CC 50%, #6A00CC 100%);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px; font-weight: 900; color: white;
+      transform: perspective(200px) rotateX(-8deg) rotateY(16deg);
+      box-shadow: 0 0 0 1px rgba(100,180,255,0.22), 0 0 24px rgba(0,100,255,0.52), 0 0 60px rgba(0,60,200,0.24),
+                  inset 0 1px 0 rgba(255,255,255,0.2), inset -2px -2px 0 rgba(0,0,0,0.16);
+      animation: float 5s ease-in-out infinite;
+    }
+    .n-cube-glow {
+      position: absolute; inset: -18px;
+      background: radial-gradient(circle, rgba(0,100,255,0.20) 0%, transparent 70%);
+      border-radius: 50%; animation: pulse-glow 5s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: perspective(200px) rotateX(-8deg) rotateY(16deg) translateY(0); }
+      50%      { transform: perspective(200px) rotateX(-8deg) rotateY(16deg) translateY(-7px); }
+    }
+    @keyframes pulse-glow {
+      0%,100% { opacity: 0.5; transform: scale(1); }
+      50%      { opacity: 0.9; transform: scale(1.15); }
+    }
+
+    /* Event title */
+    .event-eyebrow {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.28em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 4px;
+    }
+    .event-name {
+      font-size: clamp(12px, 3vw, 16px); font-weight: 700;
+      letter-spacing: 0.16em; color: rgba(255,255,255,0.65);
+      text-transform: uppercase; margin-bottom: 6px;
+    }
+    .event-subtitle {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(40px, 10.5vw, 68px); font-weight: 900; font-style: italic;
+      line-height: 1.02; letter-spacing: -0.02em;
+      background: linear-gradient(130deg, #FFFFFF 0%, #A8EEFF 45%, #00D4FF 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; margin-bottom: 16px;
+    }
+
+    /* Date text — plain, inline */
+    .event-datetime {
+      display: flex; align-items: center; justify-content: center;
+      flex-wrap: wrap; gap: 8px;
+      font-size: 13px; color: var(--text-muted);
+      margin-bottom: 0;
+    }
+    .dt-sep { color: var(--text-dim); font-size: 11px; }
+
+    /* ── RSVP card ── */
+    .form-section {
+      background: var(--surface);
+      border: 1px solid var(--border-subtle);
+      border-radius: 20px;
+      padding: clamp(24px, 5vw, 42px);
+      box-shadow: 0 0 70px rgba(0,0,0,0.45), 0 0 0 1px rgba(0,212,255,0.04);
+      margin-top: 28px;
+    }
+    .form-header { text-align: center; margin-bottom: 28px; }
+    .form-invite {
+      font-size: clamp(20px, 5vw, 26px); font-weight: 800;
+      margin-bottom: 6px; letter-spacing: -0.01em;
+    }
+    .form-subtitle { font-size: 13px; color: var(--text-muted); }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: rgba(255,255,255,0.60); margin-bottom: 6px; letter-spacing: 0.03em;
+    }
+    .form-label .req { color: var(--accent); margin-left: 3px; }
+    .form-input {
+      width: 100%; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.09); border-radius: 10px;
+      padding: 12px 15px; font-size: 15px; color: var(--text);
+      font-family: inherit; outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-input::placeholder { color: var(--text-dim); }
+    .form-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,212,255,0.09); }
+    .form-input.error { border-color: var(--error); box-shadow: 0 0 0 3px rgba(255,77,106,0.09); }
+    .error-msg { font-size: 11px; color: var(--error); margin-top: 4px; display: none; }
+    .error-msg.show { display: block; }
+
+    /* Attendance */
+    .attendance-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; }
+    .radio-card { position: relative; }
+    .radio-card input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .radio-label {
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      padding: 13px 8px; background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(255,255,255,0.09); border-radius: 10px;
+      cursor: pointer; transition: all 0.2s;
+      font-size: 13px; font-weight: 500; color: var(--text-muted);
+      text-align: center;
+    }
+    .radio-label .em { font-size: 18px; }
+    .radio-label:hover { border-color: rgba(255,255,255,0.2); }
+    .radio-card input:checked + .radio-label       { border-color: var(--accent); background: var(--accent-dim); color: var(--text); box-shadow: 0 0 12px rgba(0,212,255,0.16); }
+    .radio-card input:checked + .radio-label.not   { border-color: #FF6B6B; background: rgba(255,107,107,0.10); }
+    .radio-card input:checked + .radio-label.maybe { border-color: #FFB347; background: rgba(255,179,71,0.10); }
+    @media (max-width: 380px) {
+      .attendance-grid { grid-template-columns: 1fr; gap: 7px; }
+      .radio-label { flex-direction: row; justify-content: center; padding: 11px; }
+    }
+
+    /* Companions */
+    .companion-section {
+      overflow: hidden; max-height: 0; opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
+    }
+    .companion-section.visible { max-height: 130px; opacity: 1; margin-top: 16px; }
+    .companion-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+    @media (max-width: 380px) { .companion-grid { grid-template-columns: repeat(2,1fr); } }
+    .comp-option { position: relative; }
+    .comp-option input { position: absolute; opacity: 0; width: 0; height: 0; }
+    .comp-label {
+      display: flex; align-items: center; justify-content: center;
+      padding: 10px 6px; background: rgba(255,255,255,0.04);
+      border: 1.5px solid rgba(255,255,255,0.09); border-radius: 8px;
+      cursor: pointer; transition: all 0.2s;
+      font-size: 13px; font-weight: 500; color: var(--text-muted);
+    }
+    .comp-option input:checked + .comp-label { border-color: var(--accent); background: var(--accent-dim); color: var(--text); }
+    .comp-label:hover { border-color: rgba(255,255,255,0.2); }
+
+    /* Submit */
+    .submit-btn {
+      width: 100%; padding: 15px; margin-top: 24px;
+      background: linear-gradient(135deg, #00B4D8, #0077B6);
+      border: none; border-radius: 12px; color: white;
+      font-size: 15px; font-weight: 700; cursor: pointer;
+      transition: all 0.2s; letter-spacing: 0.04em;
+      font-family: inherit; position: relative; overflow: hidden;
+    }
+    .submit-btn::after {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.13) 0%, transparent 100%);
+      opacity: 0; transition: opacity 0.2s;
+    }
+    .submit-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,180,216,0.38); }
+    .submit-btn:hover::after { opacity: 1; }
+    .submit-btn:active { transform: none; }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .btn-spinner {
+      display: none; width: 17px; height: 17px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: white;
+      border-radius: 50%; animation: spin 0.7s linear infinite; margin: 0 auto;
+    }
+    .submit-btn.loading .btn-text { display: none; }
+    .submit-btn.loading .btn-spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Success */
+    .success-view { display: none; text-align: center; padding: 36px 0; }
+    .success-view.show { display: block; }
+    .form-view.hide { display: none; }
+    .success-icon {
+      width: 68px; height: 68px;
+      background: linear-gradient(135deg, rgba(0,229,160,0.16), rgba(0,212,255,0.16));
+      border: 2px solid var(--success); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 20px; font-size: 28px;
+    }
+    .success-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; color: var(--success); }
+    .success-msg { font-size: 14px; color: var(--text-muted); line-height: 1.7; }
+
+    /* ── Benefits (below form) ── */
+    .benefits-section {
+      margin-top: 20px;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-subtle);
+      border-radius: 16px;
+      padding: 22px 24px;
+    }
+    .benefits-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.22em;
+      text-transform: uppercase; color: var(--accent);
+      margin-bottom: 14px;
+    }
+    .benefit-item {
+      display: flex; align-items: center; gap: 11px;
+      padding: 9px 0; border-bottom: 1px solid var(--border-subtle);
+      font-size: 14px; color: rgba(255,255,255,0.85); font-weight: 500;
+    }
+    .benefit-item:last-of-type { border-bottom: none; }
+    .benefit-emoji { font-size: 17px; flex-shrink: 0; }
+    .benefit-sub { font-size: 11px; color: var(--text-muted); font-weight: 400; }
+    .benefits-note {
+      margin-top: 12px; font-size: 11px; color: var(--text-muted);
+      padding-top: 10px; border-top: 1px solid var(--border-subtle);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center; margin-top: 48px; padding-top: 24px;
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-dim); font-size: 11px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Backgrounds -->
+<div class="bg-gradient"></div>
+<div class="bg-dots"></div>
+<div class="bg-scanlines"></div>
+<canvas id="particleCanvas"></canvas>
+<div class="deco-ring ring-1"></div>
+<div class="deco-ring ring-2"></div>
+<div class="deco-ring ring-3"></div>
+<div class="deco-ring ring-4"></div>
+<div class="deco-line-tl"></div>
+<div class="deco-line-br"></div>
+
+<!-- Top bar: brands + lang -->
+<div class="top-bar">
+  <div class="brand-row">
+    <span class="brand-name brand-naver">NAVER</span>
+    <div class="brand-sep"></div>
+    <span class="brand-name brand-webtoon">WEBTOON</span>
+    <div class="brand-sep"></div>
+    <span class="brand-name brand-madhouse">MADhouse</span>
+  </div>
+  <div class="lang-dropdown">
+    <button class="lang-btn" onclick="toggleLangMenu()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+      <span id="langCurrent">中文</span>
+      <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="lang-menu" id="langMenu">
+      <div class="lang-option active" onclick="setLang('zh')"><span class="flag">🇨🇳</span> 中文</div>
+      <div class="lang-option" onclick="setLang('en')"><span class="flag">🇺🇸</span> English</div>
+      <div class="lang-option" onclick="setLang('ko')"><span class="flag">🇰🇷</span> 한국어</div>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="n-cube-wrap">
+      <div class="n-cube">
+        <div class="n-cube-glow"></div>
+        <div class="n-cube-inner">N</div>
+      </div>
+    </div>
+    <div class="event-eyebrow">2026</div>
+    <div class="event-name">NAVER MARKETING DAY</div>
+    <div class="event-subtitle">Road to Korea</div>
+    <div class="event-datetime">
+      <span data-i18n="eventDate">2026.7.28 (Tue)</span>
+      <span class="dt-sep">·</span>
+      <span>14:00~16:00</span>
+      <span class="dt-sep">|</span>
+      <span data-i18n="eventVenue">上虹桥金沙 voco酒店 会议室 2</span>
+    </div>
+  </section>
+
+  <!-- RSVP Form -->
+  <section class="form-section" id="rsvpSection">
+    <div class="success-view" id="successView">
+      <div class="success-icon">✓</div>
+      <div class="success-title" data-i18n="successTitle">感谢您的回复！</div>
+      <div class="success-msg" data-i18n="successMsg">我们已收到您的确认，期待与您共赴这场韩国市场盛会！</div>
+    </div>
+
+    <div class="form-view" id="formView">
+      <div class="form-header">
+        <div class="form-invite" data-i18n="inviteTitle">诚邀您参与</div>
+        <div class="form-subtitle" data-i18n="formSubtitle">请填写以下信息，确认您的出席意向</div>
+      </div>
+
+      <form id="rsvpForm" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="company"><span data-i18n="lCompany">公司名称</span><span class="req">*</span></label>
+          <input type="text" id="company" class="form-input" data-i18n-ph="phCompany" placeholder="请输入公司名称" required>
+          <div class="error-msg" id="companyError" data-i18n="errReq">此项为必填项</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="fullname"><span data-i18n="lName">姓名</span><span class="req">*</span></label>
+          <input type="text" id="fullname" class="form-input" data-i18n-ph="phName" placeholder="请输入您的姓名" required>
+          <div class="error-msg" id="nameError" data-i18n="errReq">此项为必填项</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="jobtitle"><span data-i18n="lJob">职位 / 业务</span><span class="req">*</span></label>
+          <input type="text" id="jobtitle" class="form-input" data-i18n-ph="phJob" placeholder="请输入您的职位或业务范围" required>
+          <div class="error-msg" id="jobError" data-i18n="errReq">此项为必填项</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="email"><span data-i18n="lEmail">电子邮件</span><span class="req">*</span></label>
+          <input type="email" id="email" class="form-input" placeholder="example@company.com" required>
+          <div class="error-msg" id="emailError" data-i18n="errEmail">请输入有效的电子邮件地址</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label"><span data-i18n="lAttend">出席情况</span><span class="req">*</span></label>
+          <div class="attendance-grid">
+            <div class="radio-card">
+              <input type="radio" name="attendance" id="rAttend" value="attending" onchange="onAttendChange(this)">
+              <label class="radio-label" for="rAttend"><span class="em">✅</span><span data-i18n="optAttend">参加</span></label>
+            </div>
+            <div class="radio-card">
+              <input type="radio" name="attendance" id="rNot" value="not_attending" onchange="onAttendChange(this)">
+              <label class="radio-label not" for="rNot"><span class="em">❌</span><span data-i18n="optNot">不参加</span></label>
+            </div>
+            <div class="radio-card">
+              <input type="radio" name="attendance" id="rMaybe" value="undecided" onchange="onAttendChange(this)">
+              <label class="radio-label maybe" for="rMaybe"><span class="em">🤔</span><span data-i18n="optMaybe">待定</span></label>
+            </div>
+          </div>
+          <div class="error-msg" id="attendanceError" data-i18n="errReq">请选择出席情况</div>
+        </div>
+
+        <div class="companion-section" id="companionSection">
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label" data-i18n="lComp">同行人数</label>
+            <div class="companion-grid">
+              <div class="comp-option"><input type="radio" name="companions" id="c0" value="just_me" checked><label class="comp-label" for="c0" data-i18n="optJustMe">仅本人</label></div>
+              <div class="comp-option"><input type="radio" name="companions" id="c1" value="+1"><label class="comp-label" for="c1">+1</label></div>
+              <div class="comp-option"><input type="radio" name="companions" id="c2" value="+2"><label class="comp-label" for="c2">+2</label></div>
+              <div class="comp-option"><input type="radio" name="companions" id="c3" value="+3"><label class="comp-label" for="c3" data-i18n="optPlus3">+3以上</label></div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="submit-btn" id="submitBtn">
+          <span class="btn-text" data-i18n="btnSubmit">提交确认</span>
+          <span class="btn-spinner"></span>
+        </button>
+      </form>
+    </div>
+  </section>
+
+  <!-- Benefits (below form) -->
+  <div class="benefits-section">
+    <div class="benefits-title" data-i18n="benefitsLabel">BENEFITS</div>
+    <div class="benefit-item">
+      <span class="benefit-emoji">🎁</span>
+      <span data-i18n="b1">NAVER 广告免费 Credits</span>
+    </div>
+    <div class="benefit-item">
+      <span class="benefit-emoji">🎁</span>
+      <span><span data-i18n="b2">WEBTOON 广告主打产品</span><br><span class="benefit-sub" data-i18n="b2sub">核心广告位优先供给</span></span>
+    </div>
+    <div class="benefits-note" data-i18n="bNote">*Q3内在NAVER平台进行付费投放即可享受</div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2026 NAVER Corp. All rights reserved.</p>
+  </footer>
+</div>
+
+<script>
+  const SCRIPT_URL = 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL';
+
+  // ─── Particles ────────────────────────────────────────────────────────────
+  (function () {
+    const canvas = document.getElementById('particleCanvas');
+    const ctx = canvas.getContext('2d');
+    let W, H;
+    const pts = [];
+    const N = 55, D = 130;
+    function resize() { W = canvas.width = innerWidth; H = canvas.height = innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+    function r(a,b) { return a + (b-a)*Math.random(); }
+    for (let i = 0; i < N; i++) pts.push({ x:r(0,innerWidth), y:r(0,innerHeight), vx:r(-0.2,0.2), vy:r(-0.2,0.2), rad:r(1,2.1), o:r(0.15,0.5) });
+    function tick() {
+      ctx.clearRect(0,0,W,H);
+      for (let i=0;i<pts.length;i++) for (let j=i+1;j<pts.length;j++) {
+        const dx=pts[i].x-pts[j].x, dy=pts[i].y-pts[j].y, d=Math.sqrt(dx*dx+dy*dy);
+        if (d<D) { ctx.beginPath(); ctx.moveTo(pts[i].x,pts[i].y); ctx.lineTo(pts[j].x,pts[j].y);
+          ctx.strokeStyle=`rgba(0,212,255,${(1-d/D)*0.11})`; ctx.lineWidth=0.8; ctx.stroke(); }
+      }
+      pts.forEach(p => { ctx.beginPath(); ctx.arc(p.x,p.y,p.rad,0,Math.PI*2);
+        ctx.fillStyle=`rgba(120,200,255,${p.o})`; ctx.fill();
+        p.x+=p.vx; p.y+=p.vy;
+        if(p.x<0)p.x=W; if(p.x>W)p.x=0; if(p.y<0)p.y=H; if(p.y>H)p.y=0;
+      });
+      requestAnimationFrame(tick);
+    }
+    tick();
+  })();
+
+  // ─── i18n ─────────────────────────────────────────────────────────────────
+  const S = {
+    zh: {
+      eventDate:'2026.7.28 (周二)', eventVenue:'上虹桥金沙 voco酒店 会议室 2',
+      inviteTitle:'诚邀您参与', formSubtitle:'请填写以下信息，确认您的出席意向',
+      lCompany:'公司名称', lName:'姓名', lJob:'职位 / 业务', lEmail:'电子邮件',
+      lAttend:'出席情况', lComp:'同行人数',
+      phCompany:'请输入公司名称', phName:'请输入您的姓名', phJob:'请输入您的职位或业务范围',
+      optAttend:'参加', optNot:'不参加', optMaybe:'待定', optJustMe:'仅本人', optPlus3:'+3以上',
+      btnSubmit:'提交确认',
+      errReq:'此项为必填项', errEmail:'请输入有效的电子邮件地址',
+      successTitle:'感谢您的回复！', successMsg:'我们已收到您的确认，期待与您共赴这场韩国市场盛会！',
+      benefitsLabel:'参会专属福利',
+      b1:'NAVER 广告免费 Credits', b2:'WEBTOON 广告主打产品', b2sub:'核心广告位优先供给',
+      bNote:'*Q3内在NAVER平台进行付费投放即可享受',
+    },
+    en: {
+      eventDate:'July 28, 2026 (Tue)', eventVenue:'Hongqiao Jinsha voco Hotel, Room 2, Shanghai',
+      inviteTitle:"You're Invited", formSubtitle:'Please complete the form to confirm your attendance',
+      lCompany:'Company Name', lName:'Full Name', lJob:'Job Title / Role', lEmail:'Email Address',
+      lAttend:'Attendance', lComp:'Additional Attendees',
+      phCompany:'Enter your company name', phName:'Enter your full name', phJob:'Enter your job title or role',
+      optAttend:'Attending', optNot:'Not Attending', optMaybe:'Undecided', optJustMe:'Just me', optPlus3:'+3 or more',
+      btnSubmit:'Submit RSVP',
+      errReq:'This field is required', errEmail:'Please enter a valid email address',
+      successTitle:'Thank you!', successMsg:"We've received your RSVP. Looking forward to seeing you at the event!",
+      benefitsLabel:'EVENT BENEFITS',
+      b1:'Free NAVER Ad Credits', b2:'WEBTOON Premium Ad Products', b2sub:'Priority access to key ad inventory',
+      bNote:'*Available for advertisers running paid NAVER campaigns in Q3',
+    },
+    ko: {
+      eventDate:'2026.7.28 (화)', eventVenue:'상하이 홍차오 진샤 voco 호텔 회의실 2',
+      inviteTitle:'여러분을 초대합니다', formSubtitle:'아래 양식을 작성하여 참석 여부를 알려주세요',
+      lCompany:'회사명', lName:'이름', lJob:'담당 업무', lEmail:'이메일',
+      lAttend:'참석 여부', lComp:'동반 참석 인원',
+      phCompany:'회사명을 입력해주세요', phName:'성함을 입력해주세요', phJob:'담당 업무를 입력해주세요',
+      optAttend:'참석', optNot:'불참', optMaybe:'미정', optJustMe:'본인만', optPlus3:'+3명 이상',
+      btnSubmit:'제출하기',
+      errReq:'필수 항목입니다', errEmail:'유효한 이메일 주소를 입력해주세요',
+      successTitle:'감사합니다!', successMsg:'참석 여부가 등록되었습니다. 행사에서 뵙겠습니다!',
+      benefitsLabel:'참석 혜택',
+      b1:'네이버 광고 무료 크레딧', b2:'웹툰 광고 메인 상품', b2sub:'핵심 광고 지면 제공',
+      bNote:'*3분기 내 네이버 광고 유상 집행 시 제공',
+    },
+  };
+
+  let lang = 'zh';
+
+  function setLang(l) {
+    lang = l;
+    document.documentElement.lang = l === 'zh' ? 'zh-CN' : l;
+    const s = S[l];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const k = el.getAttribute('data-i18n');
+      if (s[k] !== undefined) el.textContent = s[k];
+    });
+    document.querySelectorAll('[data-i18n-ph]').forEach(el => {
+      const k = el.getAttribute('data-i18n-ph');
+      if (s[k] !== undefined) el.placeholder = s[k];
+    });
+    const labels = { zh:'中文', en:'English', ko:'한국어' };
+    document.getElementById('langCurrent').textContent = labels[l];
+    document.querySelectorAll('.lang-option').forEach((el,i) => el.classList.toggle('active', ['zh','en','ko'][i] === l));
+    closeLangMenu();
+  }
+
+  function toggleLangMenu() { document.getElementById('langMenu').classList.toggle('open'); }
+  function closeLangMenu()  { document.getElementById('langMenu').classList.remove('open'); }
+  document.addEventListener('click', e => { if (!e.target.closest('.lang-dropdown')) closeLangMenu(); });
+
+  function onAttendChange(radio) {
+    document.getElementById('companionSection').classList.toggle('visible', radio.value === 'attending');
+    document.getElementById('attendanceError').classList.remove('show');
+  }
+
+  function vf(id, errId, fn) {
+    const el = document.getElementById(id), ok = fn(el.value.trim());
+    el.classList.toggle('error', !ok);
+    document.getElementById(errId).classList.toggle('show', !ok);
+    return ok;
+  }
+
+  document.getElementById('rsvpForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const s = S[lang];
+    document.querySelectorAll('[data-i18n="errReq"]').forEach(el => el.textContent = s.errReq);
+    document.getElementById('emailError').textContent = s.errEmail;
+
+    let ok = true;
+    ok = vf('company',  'companyError', v => v.length > 0) && ok;
+    ok = vf('fullname', 'nameError',    v => v.length > 0) && ok;
+    ok = vf('jobtitle', 'jobError',     v => v.length > 0) && ok;
+    ok = vf('email',    'emailError',   v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) && ok;
+
+    const attendEl = document.querySelector('input[name="attendance"]:checked');
+    if (!attendEl) {
+      document.getElementById('attendanceError').textContent = s.errReq;
+      document.getElementById('attendanceError').classList.add('show');
+      ok = false;
+    }
+    if (!ok) return;
+
+    const compEl = document.querySelector('input[name="companions"]:checked');
+    const payload = {
+      company:    document.getElementById('company').value.trim(),
+      name:       document.getElementById('fullname').value.trim(),
+      jobTitle:   document.getElementById('jobtitle').value.trim(),
+      email:      document.getElementById('email').value.trim(),
+      attendance: attendEl.value,
+      companions: attendEl.value === 'attending' && compEl ? compEl.value : '-',
+      language:   lang,
+      timestamp:  new Date().toISOString(),
+    };
+
+    const btn = document.getElementById('submitBtn');
+    btn.classList.add('loading'); btn.disabled = true;
+    try {
+      if (SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL') {
+        await fetch(SCRIPT_URL, { method:'POST', mode:'no-cors', headers:{'Content-Type':'text/plain'}, body:JSON.stringify(payload) });
+      }
+      document.getElementById('formView').classList.add('hide');
+      document.getElementById('successView').classList.add('show');
+      document.getElementById('rsvpSection').scrollIntoView({ behavior:'smooth' });
+    } catch(err) {
+      btn.classList.remove('loading'); btn.disabled = false;
+    }
+  });
+
+  ['company','fullname','jobtitle','email'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => {
+      document.getElementById(id).classList.remove('error');
+      const errId = { fullname:'nameError', jobtitle:'jobError' }[id] || id+'Error';
+      const el = document.getElementById(errId);
+      if (el) el.classList.remove('show');
+    });
+  });
+</script>
+</body>
+</html>
