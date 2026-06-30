@@ -60,12 +60,15 @@ export default function RSVPPage() {
   // Particle canvas
   useEffect(() => {
     const canvas = canvasRef.current
-    if (!canvas) return
+    if (!canvas || typeof window === 'undefined') return
     const ctx = canvas.getContext('2d')
     let W, H
     const pts = []
     const N = 55, D = 130
-    function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight }
+    function resize() {
+      W = canvas.width = window.innerWidth
+      H = canvas.height = window.innerHeight
+    }
     resize()
     window.addEventListener('resize', resize)
     function r(a, b) { return a + (b - a) * Math.random() }
@@ -149,7 +152,8 @@ export default function RSVPPage() {
       <div className="bg-gradient" />
       <div className="bg-dots" />
       <div className="bg-scanlines" />
-      <canvas ref={canvasRef} style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }} />
+      <canvas ref={canvasRef} className="particle-canvas" />
+      <div className="glow-orb orb-1" /><div className="glow-orb orb-2" /><div className="glow-orb orb-3" />
       <div className="deco-ring ring-1" /><div className="deco-ring ring-2" />
       <div className="deco-ring ring-3" /><div className="deco-ring ring-4" />
       <div className="deco-line-tl" /><div className="deco-line-br" />
