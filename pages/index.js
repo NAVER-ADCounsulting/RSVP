@@ -297,6 +297,15 @@ export default function RSVPPage() {
           <div className="benefits-note">{s.bNote}</div>
         </div>
 
+        {/* Invitation image */}
+        <div className="invitation-img-wrap">
+          <img
+            src={lang === 'zh' ? '/invitation-cn.jpg' : '/invitation-en.jpg'}
+            alt="2026 NAVER Marketing Day Invitation"
+            className="invitation-img"
+          />
+        </div>
+
         <footer className="footer">
           <p>© 2026 NAVER Corp. All rights reserved.</p>
         </footer>

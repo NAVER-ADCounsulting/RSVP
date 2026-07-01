@@ -330,6 +330,18 @@ body {
   padding-top: 10px; border-top: 1px solid var(--border-subtle);
 }
 
+/* ── Invitation image ── */
+.invitation-img-wrap {
+  margin-top: 32px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0,0,0,0.4);
+}
+.invitation-img {
+  width: 100%;
+  display: block;
+}
+
 /* ── Footer ── */
 .footer {
   text-align: center; margin-top: 48px; padding-top: 24px;
