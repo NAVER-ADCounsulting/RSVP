@@ -17,6 +17,7 @@ const S = {
     benefitsLabel: '参会专属福利', b1: 'NAVER 广告免费 Credits',
     b2: 'WEBTOON 广告主打产品', b2sub: '核心广告位优先供给',
     bNote: '*Q3内在NAVER平台进行付费投放即可享受',
+    brochureTitle: 'NAVER Marketing Day 官方宣传册',
   },
   en: {
     eventDate: 'July 28, 2026 (Tue)', eventVenue: 'Hongqiao Jinsha voco Hotel, Room 2, Shanghai',
@@ -30,6 +31,7 @@ const S = {
     benefitsLabel: 'EVENT BENEFITS', b1: 'Free NAVER Ad Credits',
     b2: 'WEBTOON Premium Ad Products', b2sub: 'Priority access to key ad inventory',
     bNote: '*Available for advertisers running paid NAVER campaigns in Q3',
+    brochureTitle: 'NAVER Marketing Day Official Brochure',
   },
   ko: {
     eventDate: '2026.7.28 (화)', eventVenue: '상하이 홍차오 진샤 voco 호텔 회의실 2',
@@ -43,6 +45,7 @@ const S = {
     benefitsLabel: '참석 혜택', b1: '네이버 광고 무료 크레딧',
     b2: '웹툰 광고 메인 상품', b2sub: '핵심 광고 지면 제공',
     bNote: '*3분기 내 네이버 광고 유상 집행 시 제공',
+    brochureTitle: 'NAVER Marketing Day 공식 브로슈어',
   },
 }
 
@@ -298,6 +301,7 @@ export default function RSVPPage() {
         </div>
 
         {/* Invitation image */}
+        <div className="brochure-label">{s.brochureTitle}</div>
         <div className="invitation-img-wrap">
           <img
             src={lang === 'zh' ? '/invitation-cn.jpg' : '/invitation-en.jpg'}
