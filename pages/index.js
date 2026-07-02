@@ -168,7 +168,7 @@ export default function RSVPPage() {
           <div className="brand-sep" />
           <span className="brand-name brand-webtoon">WEBTOON</span>
           <div className="brand-sep" />
-          <span className="brand-name brand-madhouse">MADhouse</span>
+          <span className="brand-name brand-madhouse">Madhouse</span>
         </div>
         <div className="lang-dropdown">
           <button className="lang-btn" onClick={() => setLangMenuOpen(v => !v)}>
