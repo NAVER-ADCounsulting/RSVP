@@ -8,11 +8,12 @@ const S = {
   zh: {
     eventDate: '2026.7.28 (周二)', eventVenue: '上虹桥金沙 voco酒店 会议室 2',
     inviteTitle: '诚邀您参与', formSubtitle: '请填写以下信息，确认您的出席意向',
-    lCompany: '公司名称', lName: '姓名', lJob: '职位 / 业务', lEmail: '电子邮件',
+    lCompany: '公司名称', lName: '姓名', lJob: '职位 / 业务', lEmail: '电子邮件', lPhone: '手机号码',
     lAttend: '出席情况', lComp: '同行人数',
-    phCompany: '请输入公司名称', phName: '请输入您的姓名', phJob: '请输入您的职位或业务范围',
+    phCompany: '请输入公司名称', phName: '请输入您的姓名', phJob: '请输入您的职位或业务范围', phPhone: '请输入您的手机号码',
     optAttend: '参加', optNot: '不参加', optMaybe: '待定', optJustMe: '仅本人', optPlus3: '+3以上',
-    btnSubmit: '提交确认', errReq: '此项为必填项', errEmail: '请输入有效的电子邮件地址',
+    btnSubmit: '提交确认', errReq: '此项为必填项', errEmail: '请输入有效的电子邮件地址', errConsent: '请同意个人信息收集协议',
+    privacyLabel: '本人同意收集和使用个人信息，用于活动邀请及相关沟通。',
     successTitle: '感谢您的回复！', successMsg: '我们已收到您的确认，期待与您共赴这场韩国市场盛会！',
     benefitsLabel: '参会专属福利', b1: 'NAVER 广告免费 Credits',
     b2: 'WEBTOON 广告主打产品', b2sub: '核心广告位优先供给',
@@ -22,11 +23,12 @@ const S = {
   en: {
     eventDate: 'July 28, 2026 (Tue)', eventVenue: 'Hongqiao Jinsha voco Hotel, Room 2, Shanghai',
     inviteTitle: "You're Invited", formSubtitle: 'Please complete the form to confirm your attendance',
-    lCompany: 'Company Name', lName: 'Full Name', lJob: 'Job Title / Role', lEmail: 'Email Address',
+    lCompany: 'Company Name', lName: 'Full Name', lJob: 'Job Title / Role', lEmail: 'Email Address', lPhone: 'Phone Number',
     lAttend: 'Attendance', lComp: 'Additional Attendees',
-    phCompany: 'Enter your company name', phName: 'Enter your full name', phJob: 'Enter your job title or role',
+    phCompany: 'Enter your company name', phName: 'Enter your full name', phJob: 'Enter your job title or role', phPhone: 'Enter your phone number',
     optAttend: 'Attending', optNot: 'Not Attending', optMaybe: 'Undecided', optJustMe: 'Just me', optPlus3: '+3 or more',
-    btnSubmit: 'Submit RSVP', errReq: 'This field is required', errEmail: 'Please enter a valid email address',
+    btnSubmit: 'Submit RSVP', errReq: 'This field is required', errEmail: 'Please enter a valid email address', errConsent: 'Please agree to the privacy policy',
+    privacyLabel: 'I agree to the collection and use of my personal information for event-related communications.',
     successTitle: 'Thank you!', successMsg: "We've received your RSVP. Looking forward to seeing you at the event!",
     benefitsLabel: 'EVENT BENEFITS', b1: 'Free NAVER Ad Credits',
     b2: 'WEBTOON Premium Ad Products', b2sub: 'Priority access to key ad inventory',
@@ -36,11 +38,12 @@ const S = {
   ko: {
     eventDate: '2026.7.28 (화)', eventVenue: '상하이 홍차오 진샤 voco 호텔 회의실 2',
     inviteTitle: '여러분을 초대합니다', formSubtitle: '아래 양식을 작성하여 참석 여부를 알려주세요',
-    lCompany: '회사명', lName: '이름', lJob: '담당 업무', lEmail: '이메일',
+    lCompany: '회사명', lName: '이름', lJob: '담당 업무', lEmail: '이메일', lPhone: '휴대전화 번호',
     lAttend: '참석 여부', lComp: '동반 참석 인원',
-    phCompany: '회사명을 입력해주세요', phName: '성함을 입력해주세요', phJob: '담당 업무를 입력해주세요',
+    phCompany: '회사명을 입력해주세요', phName: '성함을 입력해주세요', phJob: '담당 업무를 입력해주세요', phPhone: '전화번호를 입력해주세요',
     optAttend: '참석', optNot: '불참', optMaybe: '미정', optJustMe: '본인만', optPlus3: '+3명 이상',
-    btnSubmit: '제출하기', errReq: '필수 항목입니다', errEmail: '유효한 이메일 주소를 입력해주세요',
+    btnSubmit: '제출하기', errReq: '필수 항목입니다', errEmail: '유효한 이메일 주소를 입력해주세요', errConsent: '개인정보 수집 동의가 필요합니다',
+    privacyLabel: '개인정보 수집 및 이용에 동의합니다. (행사 초대 및 관련 안내 목적)',
     successTitle: '감사합니다!', successMsg: '참석 여부가 등록되었습니다. 행사에서 뵙겠습니다!',
     benefitsLabel: '참석 혜택', b1: '네이버 광고 무료 크레딧',
     b2: '웹툰 광고 메인 상품', b2sub: '핵심 광고 지면 제공',
@@ -57,6 +60,7 @@ export default function RSVPPage() {
   const [submitted, setSubmitted] = useState(false)
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
+  const [consent, setConsent] = useState(false)
   const canvasRef = useRef(null)
   const s = S[lang]
 
@@ -118,13 +122,16 @@ export default function RSVPPage() {
     const fullname = form.fullname.value.trim()
     const jobtitle = form.jobtitle.value.trim()
     const email = form.email.value.trim()
+    const phone = form.phone.value.trim()
 
     const newErrors = {}
     if (!company) newErrors.company = s.errReq
     if (!fullname) newErrors.fullname = s.errReq
     if (!jobtitle) newErrors.jobtitle = s.errReq
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = s.errEmail
+    if (!phone) newErrors.phone = s.errReq
     if (!attendance) newErrors.attendance = s.errReq
+    if (!consent) newErrors.consent = s.errConsent
     setErrors(newErrors)
     if (Object.keys(newErrors).length > 0) return
 
@@ -133,7 +140,7 @@ export default function RSVPPage() {
       await fetch(SCRIPT_URL, {
         method: 'POST', mode: 'no-cors',
         headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ company, name: fullname, jobTitle: jobtitle, email, attendance,
+        body: JSON.stringify({ company, name: fullname, jobTitle: jobtitle, email, phone, attendance,
           companions: attendance === 'attending' ? companions : '-',
           language: lang, timestamp: new Date().toISOString(), token: SUBMIT_TOKEN }),
       })
@@ -233,6 +240,7 @@ export default function RSVPPage() {
                   ['fullname', 'text', s.lName, s.phName, 'fullname'],
                   ['jobtitle', 'text', s.lJob, s.phJob, 'jobtitle'],
                   ['email', 'email', s.lEmail, 'example@company.com', 'email'],
+                  ['phone', 'text', s.lPhone, s.phPhone, 'phone'],
                 ].map(([id, type, label, ph, errKey]) => (
                   <div className="form-group" key={id}>
                     <label className="form-label" htmlFor={id}>{label}<span className="req">*</span></label>
@@ -275,6 +283,16 @@ export default function RSVPPage() {
                       ))}
                     </div>
                   </div>
+                </div>
+
+                {/* Privacy consent */}
+                <div className="consent-wrap">
+                  <label className="consent-label">
+                    <input type="checkbox" className="consent-checkbox" checked={consent}
+                      onChange={e => { setConsent(e.target.checked); setErrors(p => ({ ...p, consent: '' })) }} />
+                    <span>{s.privacyLabel}</span>
+                  </label>
+                  {errors.consent && <div className="error-msg show">{errors.consent}</div>}
                 </div>
 
                 <button type="submit" className={`submit-btn${loading ? ' loading' : ''}`} disabled={loading}>
